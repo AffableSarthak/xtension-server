@@ -7,11 +7,13 @@ import (
 type (
 	User struct {
 		gorm.Model
-		UserName  string `gorm:"unique" json:"name,omitempty"`
-		Hp        string `json:"hp,omitempty"`
-		SessionID uint
-		Session   Session
-		Bookmark  []Bookmark `gorm:"foreignKey:RedditorName;references:UserName"`
+		UserName   string `gorm:"unique" json:"name,omitempty"`
+		Hp         string `json:"hp,omitempty"`
+		SessionID  uint
+		Session    Session
+		BookmarkID uint
+		Bookmark   []Bookmark
+		// Bookmark  []Bookmark `gorm:"foreignKey:RedditorName;references:UserName"`
 	}
 
 	Session struct {
@@ -20,9 +22,9 @@ type (
 	}
 
 	Bookmark struct {
-		Link          string
-		SubRedditName string
-		Title         string
-		RedditorName  string `gorm:"primaryKey"`
+		Link          string `json:"link"`
+		SubRedditName string `json:"subRedditName"`
+		Title         string `json:"title"`
+		UserID        uint
 	}
 )

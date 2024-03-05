@@ -1,6 +1,7 @@
 package app
 
 import (
+	"affableSarthak/extension/server/models"
 	"fmt"
 	"net/http"
 
@@ -23,14 +24,8 @@ func (app *App) SetupBookmarkGroup() {
 
 }
 
-type Bookmark struct {
-	Title         string `json:"title"`
-	Link          string `json:"link"`
-	SubRedditName string `json:"subRedditName"`
-}
-
 func (app *App) saveBookmarks(ctx echo.Context) error {
-	var bookmarks []Bookmark
+	var bookmarks []models.Bookmark
 	err := ctx.Bind(&bookmarks)
 
 	if err != nil {
@@ -39,9 +34,16 @@ func (app *App) saveBookmarks(ctx echo.Context) error {
 	}
 	fmt.Println(bookmarks)
 
-	for i, v := range bookmarks {
-		_ = i
-		fmt.Println(v.Title)
+	for _, bookmark := range bookmarks {
+		// DB function to save bookmarks
+
+		fmt.Println("Bookmark", bookmark)
+		result := app.db.Create(&bookmark)
+
+		if result.Error != nil {
+			return ctx.String(http.StatusInternalServerError, "Error saving bookmark")
+		}
+
 	}
 
 	return ctx.String(http.StatusOK, "Bookmark Saved!")
