@@ -2,6 +2,8 @@ package app
 
 import (
 	"affableSarthak/extension/server/database"
+	"affableSarthak/extension/server/market"
+	"fmt"
 	"log"
 
 	"github.com/labstack/echo/v4"
@@ -12,15 +14,23 @@ type (
 	App struct {
 		e  *echo.Echo
 		db *gorm.DB
+		mp string // KITE | GROWWW
 	}
 )
 
 func NewApp(echoApp *echo.Echo) App {
 	db := database.PgConnect()
 
+	// Based on some value, make it kite or groww
+	kite := market.NewKiteMarket()
+	mp := market.NewMarketProvider(kite)
+
+	fmt.Println(mp)
+
 	app := App{
 		e:  echoApp,
 		db: db,
+		mp: "KITE",
 	}
 
 	app.AppInit()
@@ -28,6 +38,7 @@ func NewApp(echoApp *echo.Echo) App {
 }
 
 func (app *App) AppInit() {
+
 	app.SetupLoginRoutes()
 	app.SetupUserGroup()
 	app.SetupBookmarkGroup()

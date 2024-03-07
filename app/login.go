@@ -14,6 +14,7 @@ import (
 )
 
 func (app *App) SetupLoginRoutes() {
+
 	app.e.POST("/login", app.loginHandler)
 	app.e.POST("/xtension/login", app.xtensionLoginHandler)
 	app.e.POST("/api/v2/login", app.loginV2)

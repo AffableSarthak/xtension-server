@@ -1,29 +1,35 @@
 package market
 
+import "github.com/google/uuid"
+
 type (
-	kite struct {
-		id         string
-		isTracking bool
-		isLoggedIn bool
-		// Bunch of kite related fields
+	Kite struct {
+		Id         string
+		IsTracking bool
+		IsLoggedIn bool
+		// Bunch of Kite related fields
 	}
 )
 
 // Implement all kite-market related functions
-func (k *kite) Name() string {
-	_ = k.id
-	_ = k.isLoggedIn
-	_ = k.isTracking
+func (k *Kite) Name() string {
+	_ = k.Id
+	_ = k.IsLoggedIn
+	_ = k.IsTracking
 	return "kite"
 }
 
-func (k *kite) GetAllSymbols() any {
+func (k *Kite) GetAllSymbols() any {
 	return make([]string, 5)
 }
 
-func FetchKiteMarket() {
-	k := &kite{}
+func NewKiteMarket() Kite {
+	k := Kite{
+		Id:         uuid.NewString(),
+		IsTracking: true,
+		IsLoggedIn: false,
+	}
 
-	FetchCurrentMarketName(k)
-
+	// FetchCurrentMarketName(k)
+	return k
 }

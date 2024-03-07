@@ -1,28 +1,27 @@
 package market
 
 type (
-	groww struct {
-		id         string
-		isTracking bool
-		isLoggedIn bool
-		// Bunch of kite related fields
+	Growww struct {
+		Id        string
+		IsRunning bool
+		IsSane    bool
 	}
 )
 
 // Impliment all kite-market related functions
-func (g *groww) Name() string {
+func (g *Growww) Name() string {
 	return "groww"
 }
 
-func (g *groww) GetAllSymbols() any {
+func (g *Growww) GetAllSymbols() any {
 	return "groww nahi hua"
 }
 
 func FetchGrowwMarket() {
-	g := &groww{
-		id:         "Na mera, na tera groww",
-		isTracking: true,
-		isLoggedIn: true,
+	g := &Growww{
+		Id:        "Na mera, na tera groww",
+		IsRunning: true,
+		IsSane:    true,
 	}
 
 	FetchCurrentMarketName(g)
