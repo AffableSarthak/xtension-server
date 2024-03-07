@@ -19,7 +19,7 @@ func (app *App) SetupBookmarkGroup() {
 	bookmarkGroup.POST("/save/:name", app.saveBookmarks)
 
 	// Read
-
+	bookmarkGroup.GET("/:name", app.GetAllBookmarksForUser)
 	// Update
 
 	// Delete
@@ -76,18 +76,6 @@ func (app *App) saveBookmarks(ctx echo.Context) error {
 
 	}
 
-	// res := app.db.Create(&BookmarkDTO)
-
-	// bkErr := app.db.Model(&user).Association("Bookmark").Append(&BookmarkDTO)
-	// if bkErr != nil {
-	// 	fmt.Println(bkErr)
-	// 	return ctx.String(http.StatusInternalServerError, "Error saving bookmark")
-	// }
-
-	// if res.Error != nil {
-	// 	return ctx.String(http.StatusInternalServerError, "Error saving bookmark")
-	// }
-
 	var bookmark []models.Bookmark
 	// Get bookmarks for user
 	res := app.db.Where("user_id = ?", user.ID).Find(&bookmark)
@@ -96,5 +84,31 @@ func (app *App) saveBookmarks(ctx echo.Context) error {
 	}
 	return ctx.JSON(http.StatusOK, map[string][]models.Bookmark{
 		"bookmarks": bookmark,
+	})
+}
+
+func (app *App) GetAllBookmarksForUser(ctx echo.Context) error {
+	// Get the username from the params
+	username := ctx.Param("name")
+	var user models.User
+	res := app.db.Where("user_name = ?", username).First(&user)
+	if res.Error != nil {
+		return ctx.String(http.StatusInternalServerError, "The user doesn't exist")
+	}
+
+	var bookmarks []models.Bookmark
+	result := app.db.Where("user_id = ?", user.ID).Find(&bookmarks)
+	if result.Error != nil {
+		if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+			return ctx.JSON(http.StatusOK, map[string]string{
+				"bookmarks": "none found",
+			})
+		}
+
+		return ctx.String(http.StatusInternalServerError, "Error fetching bookmarks")
+	}
+
+	return ctx.JSON(http.StatusOK, map[string][]models.Bookmark{
+		"bookmarks": bookmarks,
 	})
 }
