@@ -15,7 +15,7 @@ import (
 
 func (app *App) SetupLoginRoutes() {
 
-	app.e.POST("/login", app.loginHandler)
+	// app.e.POST("/login", app.loginHandler)
 	app.e.POST("/xtension/login", app.xtensionLoginHandler)
 	app.e.POST("/api/v2/login", app.loginV2)
 }
@@ -145,73 +145,73 @@ func (app *App) xtensionLoginHandler(ctx echo.Context) error {
 
 }
 
-func (app *App) loginHandler(ctx echo.Context) error {
-	userName := ctx.FormValue("userName")
-	passKey := ctx.FormValue("passKey")
+// func (app *App) loginHandler(ctx echo.Context) error {
+// 	userName := ctx.FormValue("userName")
+// 	passKey := ctx.FormValue("passKey")
 
-	var user models.User
-	result := app.db.Where("user_name = ?", userName).First(&user)
+// 	var user models.User
+// 	result := app.db.Where("user_name = ?", userName).First(&user)
 
-	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
-		// Handle record not found
-		// This basically means, no user with the name : ${userName}
-		// Create user with session
-		hashedPass, err := app.HashPassword(passKey)
-		if err != nil {
-			return ctx.String(http.StatusInternalServerError, "Server failed you by not being able to parse your password")
-		}
+// 	if errors.Is(result.Error, gorm.ErrRecordNotFound) {
+// 		// Handle record not found
+// 		// This basically means, no user with the name : ${userName}
+// 		// Create user with session
+// 		hashedPass, err := app.HashPassword(passKey)
+// 		if err != nil {
+// 			return ctx.String(http.StatusInternalServerError, "Server failed you by not being able to parse your password")
+// 		}
 
-		user := models.User{
-			UserName: userName,
-			Hp:       hashedPass,
-			Session: models.Session{
-				UserSessionID: uuid.NewString(),
-			},
-		}
+// 		user := models.User{
+// 			UserName: userName,
+// 			Hp:       hashedPass,
+// 			Session: models.Session{
+// 				UserSessionID: uuid.NewString(),
+// 			},
+// 		}
 
-		res := app.db.Create(&user)
+// 		res := app.db.Create(&user)
 
-		if res.Error != nil {
-			// Some DB error in creating user
-			return ctx.String(http.StatusInternalServerError, "Sever failed in creating user")
-		}
+// 		if res.Error != nil {
+// 			// Some DB error in creating user
+// 			return ctx.String(http.StatusInternalServerError, "Sever failed in creating user")
+// 		}
 
-		userSessionId, err := app.cookieLyf(user.SessionID)
+// 		userSessionId, err := app.cookieLyf(user.SessionID)
 
-		if err != nil {
-			return ctx.String(http.StatusInternalServerError, err.Error())
-		}
-		setCookie(ctx, "session_id", userSessionId)
+// 		if err != nil {
+// 			return ctx.String(http.StatusInternalServerError, err.Error())
+// 		}
+// 		setCookie(ctx, "session_id", userSessionId)
 
-		return ctx.String(http.StatusOK, "Login successful")
-	}
+// 		return ctx.String(http.StatusOK, "Login successful")
+// 	}
 
-	if result.Error != nil {
-		// Some unknowed DB error occured
-		return ctx.String(http.StatusInternalServerError, "DB failure")
-	}
+// 	if result.Error != nil {
+// 		// Some unknowed DB error occured
+// 		return ctx.String(http.StatusInternalServerError, "DB failure")
+// 	}
 
-	// USER DOES EXIST
+// 	// USER DOES EXIST
 
-	// check if entered password is correct
-	isCorrectPasskey := app.CheckPasswordHash(passKey, user.Hp)
+// 	// check if entered password is correct
+// 	isCorrectPasskey := app.CheckPasswordHash(passKey, user.Hp)
 
-	// Password is correct
-	if isCorrectPasskey {
-		userSessionId, err := app.cookieLyf(user.SessionID)
+// 	// Password is correct
+// 	if isCorrectPasskey {
+// 		userSessionId, err := app.cookieLyf(user.SessionID)
 
-		if err != nil {
-			return ctx.String(http.StatusInternalServerError, err.Error())
-		}
-		setCookie(ctx, "session_id", userSessionId)
+// 		if err != nil {
+// 			return ctx.String(http.StatusInternalServerError, err.Error())
+// 		}
+// 		setCookie(ctx, "session_id", userSessionId)
 
-		return ctx.String(http.StatusOK, "Login successful")
-	} else {
-		// Invalid password
-		return ctx.String(http.StatusBadRequest, "Either username or password is incorrect")
-	}
+// 		return ctx.String(http.StatusOK, "Login successful")
+// 	} else {
+// 		// Invalid password
+// 		return ctx.String(http.StatusBadRequest, "Either username or password is incorrect")
+// 	}
 
-}
+// }
 
 func (app *App) cookieLyf(sessionID uint) (string, error) {
 	var session models.Session

@@ -20,6 +20,7 @@ func (app *App) SetupBookmarkGroup() {
 
 	// Read
 	bookmarkGroup.GET("/:name", app.GetAllBookmarksForUser)
+	bookmarkGroup.GET("/preload/:name", app.GetBookmarksUsingPreload)
 	// Update
 
 	// Delete
@@ -110,5 +111,21 @@ func (app *App) GetAllBookmarksForUser(ctx echo.Context) error {
 
 	return ctx.JSON(http.StatusOK, map[string][]models.Bookmark{
 		"bookmarks": bookmarks,
+	})
+}
+
+func (app *App) GetBookmarksUsingPreload(ctx echo.Context) error {
+	username := ctx.Param("name")
+
+	var user models.User
+
+	result := app.db.Where("user_name = ?", username).Preload("Bookmark").Find(&user)
+
+	if result.Error != nil {
+		return ctx.String(http.StatusInternalServerError, "User invalid")
+	}
+
+	return ctx.JSON(http.StatusOK, map[string][]models.Bookmark{
+		"bookmarks": user.Bookmark,
 	})
 }
