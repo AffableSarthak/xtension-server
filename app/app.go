@@ -22,6 +22,7 @@ func NewApp(echoApp *echo.Echo) App {
 	db := database.PgConnect()
 
 	// Based on some value, make it kite or groww
+	// Create a helper function to give you all kite or groww related functionality based on the market provider type
 	kite := market.NewKiteMarket()
 	mp := market.NewMarketProvider(kite)
 
