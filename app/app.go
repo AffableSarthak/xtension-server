@@ -39,7 +39,6 @@ func NewApp(echoApp *echo.Echo) App {
 }
 
 func (app *App) AppInit() {
-
 	app.SetupLoginRoutes()
 	app.SetupUserGroup()
 	app.SetupBookmarkGroup()

@@ -12,6 +12,9 @@ import (
 
 func (app *App) SetupBookmarkGroup() {
 	bookmarkGroup := app.e.Group("/bookmarks")
+
+	// Adding middleware to check if the user is authenticated
+	// and can access this route
 	bookmarkGroup.Use(app.isAuthenticated)
 
 	/// Implement a CRUD for bookmarks - TODO.
@@ -24,6 +27,7 @@ func (app *App) SetupBookmarkGroup() {
 	// Update
 
 	// Delete
+	bookmarkGroup.DELETE(":/name", app.DeleteAllBookmarksForUser)
 
 }
 
@@ -128,4 +132,8 @@ func (app *App) GetBookmarksUsingPreload(ctx echo.Context) error {
 	return ctx.JSON(http.StatusOK, map[string][]models.Bookmark{
 		"bookmarks": user.Bookmark,
 	})
+}
+
+func (app *App) DeleteAllBookmarksForUser(ctx echo.Context) error {
+	return ctx.String(200, "Deleted user bookmarks")
 }
